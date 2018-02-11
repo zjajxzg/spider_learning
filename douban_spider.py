@@ -1,6 +1,4 @@
 #-*-coding:utf-8-*-
-import urllib2
-import re
 import requests
 import sys
 import MySQLdb
@@ -24,19 +22,18 @@ movies = soup.find_all('a','nbg')         #等同于soup.find_all('a',class_='nb
 print title.string[0:5]
 #print rating_nums
 #print movies
-movies_list = []
-rating_nums_list = []
 soups_list = []
 soups_list.append(movies)
 soups_list.append(rating_nums)
-#print soups_list
+sql = 'insert into douban_2017_new_movies (movies_name,rating_nums) values(%s,%s)'
 for i in range(10):
     print '电影:{0},评分:{1}'.format(soups_list[0][i]['title'],soups_list[1][i].string)
-    print type(soups_list[0][i]['title'])
-    cur.execute('insert into douban_2017_new_movies(movies_name,rating_nums) values (%s,%s)'% ('中文'.encode('utf-8'),soups_list[1][i].string))
+    param = (soups_list[0][i]['title'],soups_list[1][i].string)
+    #cur.execute('insert into douban_2017_new_movies(movies_name,rating_nums) values (%s,%s)',(soups_list[0][i]['title'],soups_list[1][i].string))
+    cur.execute(sql,param)        #执行sql，将数据插入数据库
     db.commit()
-for tag in movies:
-    print 'movies:<<{0}>>'.format(tag['title'])
-for rating_num in rating_nums:
-    print rating_num.string            #标签内容
+#for tag in movies:
+    #print 'movies:<<{0}>>'.format(tag['title'])
+#for rating_num in rating_nums:
+    #print rating_num.string            #标签内容
 db.close()
